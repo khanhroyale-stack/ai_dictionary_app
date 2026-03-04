@@ -1,0 +1,65 @@
+{
+  "expo": {
+    "name": "ai_dictionary_app_testing",
+    "slug": "ai_dictionary_app_testing",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "aidictionaryapptesting",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yourname.aidictionary",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Ứng dụng cần camera để quét vật thể.",
+        "NSPhotoLibraryUsageDescription": "Ứng dụng cần thư viện ảnh."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.yourname.aidictionary",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.VIBRATE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+      // ❌ Xóa "output": "static" — dòng này bắt buộc phải có expo-router
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Ứng dụng cần camera để quét vật thể."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#6C63FF"
+        }
+      ]
+    ]
+    // ❌ Không có "experiments" block
+  }
+}
