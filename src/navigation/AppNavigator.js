@@ -8,17 +8,26 @@ import { useSelector } from 'react-redux';
 import { COLORS } from '../constants/colors';
 
 // Screens
-import UpdateProfileScreen from '@/screens/Profile/UpdateProfile';
-import SettingsScreen from '@/screens/Settings';
 import AccountScreen from '../screens/Account/index.js';
+import HomeScreen from '../screens/Home/index';
 import LoginScreen from '../screens/Login/index';
 import ProfileScreen from '../screens/Profile/index';
+import UpdateProfileScreen from '../screens/Profile/UpdateProfile';
 import ScanScreen from '../screens/Scan/index';
 import ScannedWordsScreen from '../screens/ScannedWords/index';
+import SettingsScreen from '../screens/Settings/index';
 import WordDetailScreen from '../screens/WordDetail.js/index';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+// Stack for Home
+const HomeStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="HomeMain" component={HomeScreen} />
+    <Stack.Screen name="WordDetail" component={WordDetailScreen} />
+  </Stack.Navigator>
+);
 
 // Stack for ScannedWords
 const ScannedWordsStack = () => (
@@ -36,27 +45,18 @@ const AccountStack = () => (
     <Stack.Screen name="WordDetail" component={WordDetailScreen} />
     <Stack.Screen
       name="Settings"
-      options={{
-        title: 'Cài đặt',
-        headerShown: true,
-      }}
       component={SettingsScreen}
+      options={{ title: 'Cài đặt', headerShown: true }}
     />
     <Stack.Screen
       name="Profile"
-      options={{
-        title: 'Tài khoản',
-        headerShown: true,
-      }}
       component={ProfileScreen}
+      options={{ title: 'Tài khoản', headerShown: true }}
     />
     <Stack.Screen
       name="UpdateProfile"
-      options={{
-        title: 'Cập nhật thông tin',
-        headerShown: true,
-      }}
       component={UpdateProfileScreen}
+      options={{ title: 'Cập nhật thông tin', headerShown: true }}
     />
   </Stack.Navigator>
 );
@@ -64,16 +64,15 @@ const AccountStack = () => (
 // Custom tab bar
 const CustomTabBar = ({ state, descriptors, navigation }) => {
   const tabs = [
-    { name: 'Quét', icon: 'camera', iconActive: 'camera' },
-    { name: 'Từ đã quét', icon: 'list', iconActive: 'list' },
-    { name: 'Tài khoản & Cài đặt', icon: 'person-circle-outline', iconActive: 'person-circle' },
-    { name: 'Cài đặt', icon: 'settings-outline', iconActive: 'settings' },
+    { icon: 'home-outline',          iconActive: 'home',          label: 'Trang chủ' },
+    { icon: 'camera-outline',        iconActive: 'camera',        label: 'Quét' },
+    { icon: 'list-outline',          iconActive: 'list',          label: 'Từ đã quét' },
+    { icon: 'person-circle-outline', iconActive: 'person-circle', label: 'Tài khoản' },
   ];
 
   return (
     <View style={tabStyles.container}>
       {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
         const isFocused = state.index === index;
         const tab = tabs[index];
 
@@ -88,12 +87,20 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
           }
         };
 
-        const shortLabels = ['Quét', 'Từ đã quét', 'Tài khoản', 'Cài đặt'];
-
         return (
-          <TouchableOpacity key={route.key} style={tabStyles.tab} onPress={onPress} activeOpacity={0.7}>
-            <Ionicons name={isFocused ? tab.iconActive : tab.icon} size={22} color={isFocused ? COLORS.primary : COLORS.gray} />
-            <Text style={[tabStyles.label, isFocused && tabStyles.labelActive]}>{shortLabels[index]}</Text>
+          <TouchableOpacity
+            key={route.key}
+            style={tabStyles.tab}
+            onPress={onPress}
+            activeOpacity={0.7}>
+            <Ionicons
+              name={isFocused ? tab.iconActive : tab.icon}
+              size={22}
+              color={isFocused ? COLORS.primary : COLORS.gray}
+            />
+            <Text style={[tabStyles.label, isFocused && tabStyles.labelActive]}>
+              {tab.label}
+            </Text>
           </TouchableOpacity>
         );
       })}
@@ -122,11 +129,13 @@ const tabStyles = StyleSheet.create({
 
 // Main tab navigator
 const MainNavigator = () => (
-  <Tab.Navigator tabBar={(props) => <CustomTabBar {...props} />} screenOptions={{ headerShown: false }}>
+  <Tab.Navigator
+    tabBar={(props) => <CustomTabBar {...props} />}
+    screenOptions={{ headerShown: false }}>
+    <Tab.Screen name="Home" component={HomeStack} />
     <Tab.Screen name="Scan" component={ScanScreen} />
     <Tab.Screen name="ScannedWords" component={ScannedWordsStack} />
     <Tab.Screen name="Account" component={AccountStack} />
-    {/* <Tab.Screen name="Settings" component={SettingsScreen} /> */}
   </Tab.Navigator>
 );
 
@@ -137,7 +146,11 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {!isAuthenticated ? <Stack.Screen name="Login" component={LoginScreen} /> : <Stack.Screen name="Main" component={MainNavigator} />}
+        {!isAuthenticated ? (
+          <Stack.Screen name="Login" component={LoginScreen} />
+        ) : (
+          <Stack.Screen name="Main" component={MainNavigator} />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

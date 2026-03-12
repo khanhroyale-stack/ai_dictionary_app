@@ -13,6 +13,8 @@ import {
   View,
   Image,
   ActivityIndicator,
+  KeyboardAvoidingView, // ← thêm import
+  Platform,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Yup from 'yup';
@@ -20,14 +22,49 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { auth, database } from '../../services/firebaseService';
 
 const UpdateProfileSchema = Yup.object().shape({
-  displayName: Yup.string().min(2, 'Tên quá ngắn').required('Vui lòng nhập họ tên'),
+  displayName: Yup.string()
+    .min(2, 'Tên phải có ít nhất 2 ký tự')
+    .max(50, 'Tên không được quá 50 ký tự')
+    .matches(/^[a-zA-ZÀ-ỹ\s]+$/, 'Tên không được chứa số hoặc ký tự đặc biệt')
+    .required('Vui lòng nhập họ tên'),
+
   phone: Yup.string()
-    .matches(/^[0-9+ ]+$/, 'Số điện thoại không hợp lệ')
+    .matches(/^(0|\+84)[0-9]{9}$/, 'Số điện thoại không hợp lệ (VD: 0912345678)')
     .required('Vui lòng nhập số điện thoại'),
+
   dob: Yup.string()
     .required('Vui lòng nhập ngày sinh')
-    .matches(/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/, 'Định dạng phải là DD/MM/YYYY'),
-  address: Yup.string().required('Vui lòng nhập địa chỉ'),
+    .matches(
+      /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/,
+      'Định dạng phải là DD/MM/YYYY'
+    )
+    .test('valid-date', 'Ngày sinh không hợp lệ', (value) => {
+      if (!value) return false;
+      const [day, month, year] = value.split('/').map(Number);
+      const date = new Date(year, month - 1, day);
+      return (
+        date.getFullYear() === year &&
+        date.getMonth() === month - 1 &&
+        date.getDate() === day
+      );
+    })
+    .test('not-future', 'Ngày sinh không được là ngày trong tương lai', (value) => {
+      if (!value) return false;
+      const [day, month, year] = value.split('/').map(Number);
+      return new Date(year, month - 1, day) <= new Date();
+    })
+    .test('min-age', 'Bạn phải ít nhất 5 tuổi', (value) => {
+      if (!value) return false;
+      const [day, month, year] = value.split('/').map(Number);
+      const minAge = new Date();
+      minAge.setFullYear(minAge.getFullYear() - 5);
+      return new Date(year, month - 1, day) <= minAge;
+    }),
+
+  address: Yup.string()
+    .min(10, 'Địa chỉ phải có ít nhất 10 ký tự')
+    .max(200, 'Địa chỉ không được quá 200 ký tự')
+    .required('Vui lòng nhập địa chỉ'),
 });
 
 const UpdateProfileScreen = ({ navigation }) => {
@@ -153,10 +190,14 @@ const UpdateProfileScreen = ({ navigation }) => {
   const displayAvatar = avatarUri || userData?.photoURL;
 
   return (
-    <View style={{ flex: 1 }}>
+    <KeyboardAvoidingView style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}>
       <ScrollView
         style={styles.container}
-        contentContainerStyle={{ paddingBottom: 40 }}>
+        contentContainerStyle={{ paddingBottom: Platform.OS === 'android' ? 120 : 40 }}
+        keyboardShouldPersistTaps="handled" // ← thêm dòng này
+        showsVerticalScrollIndicator={false}>
         <Formik
           enableReinitialize
           initialValues={{
@@ -307,7 +348,7 @@ const UpdateProfileScreen = ({ navigation }) => {
           )}
         </Formik>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
