@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Yup from 'yup';
+import * as FileSystem from 'expo-file-system/legacy';
 import { auth, database } from '../../services/firebaseService';
 
 const UpdateProfileSchema = Yup.object().shape({
@@ -102,24 +103,19 @@ const UpdateProfileScreen = ({ navigation }) => {
   // Thay hàm uploadAvatar trong UpdateProfileScreen.js
   const uploadAvatar = async (uri) => {
     try {
-      // Đọc file ảnh thành base64
-      const response = await fetch(uri);
-      const blob = await response.blob();
-
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result); // trả về "data:image/jpeg;base64,..."
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
+      console.log('URI:', uri); // kiểm tra uri có hợp lệ không
+      const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
+      console.log('Base64 length:', base64?.length); // kiểm tra đọc được không
+      return `data:image/jpeg;base64,${base64}`;
     } catch (error) {
+      console.error('uploadAvatar error:', error);
       throw new Error('Xử lý ảnh thất bại: ' + error.message);
     }
   };
   // ==================== SUBMIT ====================
   const handleUpdate = async (values) => {
     try {
-      let photoURL = user.photoURL;
+      let photoURL = userData?.photoURL || user.photoURL || null;;
 
       // Upload avatar mới nếu có chọn
       if (avatarUri) {
