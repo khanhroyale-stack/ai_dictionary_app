@@ -100,7 +100,7 @@ const SettingsScreen = () => {
             />
           </SettingRow>
           <View style={styles.divider} />
-          <SettingRow label="Hiện độ tin cậy" icon="shield-checkmark-outline" iconColor={COLORS.success}>
+          <SettingRow label="Hiện độ chính xác" icon="shield-checkmark-outline" iconColor={COLORS.success}>
             <Switch
               value={showTrustLevel}
               onValueChange={() => {

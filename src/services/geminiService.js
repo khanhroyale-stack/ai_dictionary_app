@@ -25,34 +25,18 @@ export const geminiService = {
 
       const sourceLang = languageMap[sourceLanguage] || 'Vietnamese';
       const targetLang = languageMap[targetLanguage] || 'English';
-      const prompt = `You are an AI language learning assistant. Analyze this image and identify the main object(s).
-
-Return a JSON response (no markdown, no code blocks, just pure JSON) with this exact structure:
+      const prompt = `Identify the main object in this image. Return ONLY pure JSON no markdown:
 {
-  "objectName": "Name of the main object in ${sourceLang}",
-  "objectNameEn": "Name in English",
-  "translation": "Translation in ${targetLang}",
-  "pronunciation": "IPA pronunciation if translating to English, otherwise romanization",
-  "partOfSpeech": "noun/verb/adjective etc",
+  "objectName": "tên bằng ${sourceLang}",
+  "translation": "dịch sang ${targetLang}",
+  "pronunciation": "IPA",
+  "partOfSpeech": "noun/verb/adj",
   "confidence": 0.95,
-  "examples": [
-    {
-      "sentence": "Example sentence using the word in ${sourceLang}",
-      "translation": "Translation of example in ${targetLang}"
-    },
-    {
-      "sentence": "Another example in ${sourceLang}",
-      "translation": "Translation in ${targetLang}"
-    }
-  ],
-  "relatedWords": [
-    {"word": "related word 1 in ${targetLang}", "meaning": "meaning in ${sourceLang}"},
-    {"word": "related word 2 in ${targetLang}", "meaning": "meaning in ${sourceLang}"}
-  ],
-  "category": "category of the object (e.g: food, furniture, electronics, nature, etc)",
-  "description": "Brief description of the object in ${sourceLang} (2-3 sentences)"
+  "category": "food/furniture/electronics/nature/etc",
+  "description": "1 câu mô tả ngắn bằng ${sourceLang}",
+  "examples": [{"sentence": "ví dụ bằng ${sourceLang}", "translation": "dịch sang ${targetLang}"}],
+  "relatedWords": [{"word": "từ liên quan", "meaning": "nghĩa"}]
 }`;
-
       const imagePart = imageToGenerativePart(base64Image, 'image/jpeg');
       const result = await model.generateContent([prompt, imagePart]);
       const response = result.response.text();

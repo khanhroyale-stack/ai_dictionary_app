@@ -108,7 +108,7 @@ const LoginScreen = () => {
           <View style={styles.iconContainer}>
             <Ionicons name="camera" size={48} color={COLORS.white} />
           </View>
-          <Text style={styles.appName}>AI Dictionary</Text>
+          <Text style={styles.appName}>Learn From Life</Text>
           <Text style={styles.appTagline}>Học từ vựng thông minh với AI</Text>
         </LinearGradient>
 

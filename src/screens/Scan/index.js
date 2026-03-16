@@ -45,7 +45,7 @@ const ScanScreen = () => {
     try {
       setIsScanning(true);
       const photo = await cameraRef.current.takePictureAsync({
-        quality: 0.7,
+        quality: 0.5,
         base64: true,
       });
       setCapturedImage(photo.uri);
@@ -276,7 +276,7 @@ const ScanScreen = () => {
                     <View style={styles.confidenceRow}>
                       <Ionicons name="checkmark-circle" size={16} color={COLORS.success} />
                       <Text style={styles.confidenceText}>
-                        Độ tin cậy: {Math.round((scannedData.confidence || 0.9) * 100)}%
+                        Độ chính xác: {Math.round((scannedData.confidence || 0.9) * 100)}%
                       </Text>
                     </View>
                   </View>
